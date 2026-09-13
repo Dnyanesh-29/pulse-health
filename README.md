@@ -23,7 +23,7 @@
 
 **Track 03 — Smart Health & Supply Chain Resilience**  
 Build with AI: Code for Communities — Second Edition  
-Google Cloud × Hack2skill | Prize Pool: ₹10,00,000
+Google Cloud × Hack2skill
 
 </div>
 
@@ -358,12 +358,6 @@ Geography:   district_encoded  (88 districts, LabelEncoded)
 | eVIN stock-out reduction benchmark (vaccines) | **80% reduction** |
 
 > eVIN (electronic Vaccine Intelligence Network) proved that real-time stock visibility reduces vaccine stock-outs by 80%. PULSE applies the same intelligence model to **all essential medicines**, across all PHCs, not just cold-chain items.
-
----
-
-## 👨‍💻 Team
-
-Built by **Dnyanesh** for *Build with AI: Code for Communities — Second Edition*
 
 ---
 
