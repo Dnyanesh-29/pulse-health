@@ -1,0 +1,13 @@
+flask
+firebase-admin
+google-cloud-firestore
+google-cloud-aiplatform
+google-generativeai
+google-cloud-translate
+twilio
+python-dotenv
+requests
+gunicorn
+langdetect
+scikit-learn
+numpy
