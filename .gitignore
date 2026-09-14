@@ -1,4 +1,4 @@
-﻿# -- Environment files ---------------------------------------------------------
+# -- Environment files ---------------------------------------------------------
 .env
 .env.local
 .env.production
@@ -32,6 +32,15 @@ yarn-error.log*
 
 # -- React build ---------------------------------------------------------------
 dashboard/build/
+
+# -- Firebase deploy cache -----------------------------------------------------
+dashboard/.firebase/
+
+# -- Seed / dev utility scripts (not for production) --------------------------
+seed_demo_data.py
+reseed_demo_data.py
+add_ahmednagar_alerts.py
+backend/seed_demo_alerts.py
 
 # -- ML models (large binary files) -------------------------------------------
 ml/*.pkl

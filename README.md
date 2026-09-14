@@ -130,7 +130,7 @@ Connected to **IDSP disease surveillance signals**. When dengue cases spike in a
 |---|---|---|---|---|
 | GradientBoosting | ORS demand (next month) | **0.905** | 261,230 units | 364 |
 | GradientBoosting | Antibiotics demand | 0.609 | 34,570 units | 209 |
-| GradientBoosting | IFA tablets demand | -0.046 ⚠️ | 6,320,886 units | 337 |
+
 
 Trained on **2 years of HMIS district-level consumption data** across 88 districts in Maharashtra and Rajasthan. Input features include OPD attendance, seasonal month signals, epidemic case counts, temperature, and precipitation.
 
