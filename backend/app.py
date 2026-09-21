@@ -10,7 +10,12 @@ def create_app():
     app = Flask(__name__)
 
     # Firebase Admin SDK
-    cred = credentials.Certificate(os.getenv("GOOGLE_APPLICATION_CREDENTIALS", "firebase-key.json"))
+    cred_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS", "firebase-key.json")
+    if not os.path.isabs(cred_path) and not os.path.exists(cred_path):
+        candidate = os.path.join(os.path.dirname(__file__), cred_path)
+        if os.path.exists(candidate):
+            cred_path = candidate
+    cred = credentials.Certificate(cred_path)
     if not firebase_admin._apps:
         firebase_admin.initialize_app(cred, {
             "projectId": os.getenv("FIREBASE_PROJECT_ID"),

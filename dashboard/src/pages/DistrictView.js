@@ -78,7 +78,7 @@ export default function DistrictView({
   function timeAgo(date) {
     if (!date) return 'Sep 12, 09:15';
     const seconds = Math.floor((new Date() - date) / 1000);
-    if (seconds < 60) return 'Live — Just now';
+    if (seconds < 60) return 'Live - Just now';
     const minutes = Math.floor(seconds / 60);
     if (minutes < 60) return `Live — ${minutes}m ago`;
     const hours = Math.floor(minutes / 60);
@@ -466,12 +466,6 @@ export default function DistrictView({
       value: isLiveData ? timeAgo(lastUpdated) : "Sep 12, 09:15", 
       color: "#4A5568", 
       isNumber: false 
-    },
-    {
-      label: "Staff Reporting",
-      value: isLiveStaff ? `${staffReportingCount} PHCs` : `${staffReportingCount} PHCs today`,
-      color: "#5B4FCF",
-      isNumber: false
     }
   ];
 
@@ -485,14 +479,14 @@ export default function DistrictView({
               District Health Command
             </h1>
             {isLiveData ? (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#F0FFF4] text-[#2D6A4F] border border-[#52B788]/40 shadow-xs">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#F0FFF4] text-[#2D6A4F] border border-[#52B788]/40 shadow-xs shrink-0 whitespace-nowrap">
                 <span className="w-2 h-2 rounded-full bg-[#2D6A4F] animate-pulse" />
-                ● Live Data
+                Live Data
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#F0FFF4] text-[#2D6A4F] border border-[#52B788]/40 shadow-xs">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#F0FFF4] text-[#2D6A4F] border border-[#52B788]/40 shadow-xs shrink-0 whitespace-nowrap">
                 <span className="w-2 h-2 rounded-full bg-[#2D6A4F] animate-pulse" />
-                ● Live System
+                Live System
               </span>
             )}
           </div>
@@ -668,9 +662,9 @@ export default function DistrictView({
                             <div className="flex items-center gap-2">
                               <span>{row.phcName}</span>
                               {row.isLive && (
-                                <span className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#E8F5E9] text-[#2D6A4F] border border-[#52B788]/40 shadow-2xs">
+                                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#E8F5E9] text-[#2D6A4F] border border-[#52B788]/30 shrink-0 whitespace-nowrap">
                                   <span className="w-1.5 h-1.5 rounded-full bg-[#2D6A4F] animate-pulse" />
-                                  ● Live
+                                  Live
                                 </span>
                               )}
                             </div>

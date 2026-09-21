@@ -110,20 +110,41 @@ export default function App() {
           <div className="max-w-7xl mx-auto px-8">
             <div className="flex items-center justify-between h-20">
               {/* Logo and Title */}
-              <Link to="/" className="flex flex-col justify-center">
-                <div className="flex items-center gap-2.5">
-                  <span className="font-extrabold text-2xl tracking-tight text-white leading-none">
-                    PULSE
-                  </span>
-                  <span className="text-white/40">|</span>
-                  <span className="text-sm font-medium text-white/90 hidden sm:inline leading-none">
-                    Primary Unit Level Supply & Emergency Intelligence
-                  </span>
+              <Link to="/" className="flex items-center gap-3 group">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#082317] to-[#1B4332] border border-[#52B788]/40 shadow-sm flex items-center justify-center shrink-0 p-1.5 ring-1 ring-white/10 group-hover:border-[#52B788] transition-all">
+                  <svg viewBox="0 0 64 64" className="w-full h-full" fill="none">
+                    <defs>
+                      <linearGradient id="headerPulseLine" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="#52B788" />
+                        <stop offset="60%" stopColor="#00F5A0" />
+                        <stop offset="100%" stopColor="#52B788" />
+                      </linearGradient>
+                    </defs>
+                    <path
+                      d="M 8 33 L 19 33 L 26 17 L 35 49 L 43 21 L 49 37 L 53 33 L 56 33"
+                      stroke="url(#headerPulseLine)"
+                      strokeWidth="5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <circle cx="43" cy="21" r="3" fill="#FFFFFF" />
+                  </svg>
                 </div>
-                <div className="mt-1.5 flex items-center">
-                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-bold tracking-wide uppercase bg-[#52B788]/20 text-[#52B788] border border-[#52B788]/35 rounded-full">
-                    ● National Pilot — 6 States
-                  </span>
+                <div className="flex flex-col justify-center">
+                  <div className="flex items-center gap-2.5">
+                    <span className="font-extrabold text-2xl tracking-tight text-white leading-none">
+                      PULSE
+                    </span>
+                    <span className="text-white/40">|</span>
+                    <span className="text-sm font-medium text-white/90 hidden sm:inline leading-none">
+                      Primary Unit Level Supply & Emergency Intelligence
+                    </span>
+                  </div>
+                  <div className="mt-1.5 flex items-center">
+                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-bold tracking-wide uppercase bg-[#52B788]/20 text-[#52B788] border border-[#52B788]/35 rounded-full">
+                      ● National Pilot — 6 States
+                    </span>
+                  </div>
                 </div>
               </Link>
 

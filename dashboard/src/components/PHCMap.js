@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, 
-         CircleMarker, Popup, Tooltip } from 'react-leaflet';
+import { GoogleMap, useJsApiLoader, MarkerF, InfoWindowF } from '@react-google-maps/api';
 import { subscribeToStockUpdates } from '../firebase';
 
 // Base PHC locations with coordinates
 // These are real PHC locations from our dataset
-const BASE_PHC_DATA = [
+export const PHC_MARKERS = [
   { name: "Sangamner Rural PHC", lat: 19.5786, lng: 74.2095,
     district: "Ahmednagar", state: "Maharashtra" },
   { name: "Akole Tribal PHC", lat: 19.6156, lng: 73.9845,
@@ -60,8 +59,10 @@ const BASE_PHC_DATA = [
     district: "Indore", state: "Madhya Pradesh" },
 ];
 
+export const BASE_PHC_DATA = PHC_MARKERS;
+
 // Default stock status based on our HMIS data
-const DEFAULT_STATUS = {
+export const DEFAULT_STATUS = {
   "Ahmednagar": { medicine: "ORS", daysLeft: 6, status: "atrisk" },
   "Nashik": { medicine: "Paracetamol", daysLeft: 3, status: "critical" },
   "Pune": { medicine: "IFA", daysLeft: 21, status: "safe" },
@@ -84,22 +85,42 @@ const DEFAULT_STATUS = {
   "Indore": { medicine: "ORS", daysLeft: 16, status: "safe" },
 };
 
-const STATUS_COLORS = {
+export const STATUS_COLORS = {
   critical: '#C0392B',
   atrisk: '#E67E22',
   safe: '#27AE60'
 };
 
-const STATUS_RADIUS = {
-  critical: 12,
-  atrisk: 9,
-  safe: 7
+const mapContainerStyle = {
+  height: '480px',
+  width: '100%',
+  borderRadius: '12px',
+  border: '1px solid #e5e7eb',
+};
+
+const mapCenter = {
+  lat: 22.5937,
+  lng: 78.9629
+};
+
+const mapOptions = {
+  disableDefaultUI: false,
+  zoomControl: true,
+  streetViewControl: false,
+  mapTypeControl: false,
+  fullscreenControl: true,
 };
 
 export default function PHCMap() {
   const [markers, setMarkers] = useState([]);
   const [liveUpdates, setLiveUpdates] = useState([]);
   const [liveCount, setLiveCount] = useState(0);
+  const [selectedPhc, setSelectedPhc] = useState(null);
+
+  const { isLoaded, loadError } = useJsApiLoader({
+    id: 'google-map-script',
+    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY || process.env.REACT_APP_FIREBASE_API_KEY || ''
+  });
 
   // Subscribe to real Firestore stock_updates
   useEffect(() => {
@@ -109,12 +130,14 @@ export default function PHCMap() {
         setLiveCount(updates.length);
       }
     });
-    return () => unsub();
+    return () => {
+      if (typeof unsub === 'function') unsub();
+    };
   }, []);
 
   // Merge base data with real Firestore updates
   useEffect(() => {
-    const merged = BASE_PHC_DATA.map(phc => {
+    const merged = PHC_MARKERS.map(phc => {
       // Check if we have real data for this PHC
       const realUpdate = liveUpdates.find(u => 
         u.phc_id && u.phc_id.toLowerCase()
@@ -160,6 +183,20 @@ export default function PHCMap() {
     m => m.status === 'atrisk'
   ).length;
 
+  const getMarkerIcon = (status, isLive) => {
+    const color = STATUS_COLORS[status] || '#27AE60';
+    return {
+      path: (window.google && window.google.maps && window.google.maps.SymbolPath)
+        ? window.google.maps.SymbolPath.CIRCLE
+        : 0,
+      scale: isLive ? 9 : 7,
+      fillColor: color,
+      fillOpacity: 0.95,
+      strokeColor: '#FFFFFF',
+      strokeWeight: isLive ? 3 : 2,
+    };
+  };
+
   return (
     <div>
       {/* Live data indicator */}
@@ -179,66 +216,45 @@ export default function PHCMap() {
       )}
 
       <div style={{ position: 'relative', zIndex: 0, isolation: 'isolate', borderRadius: '12px', overflow: 'hidden' }}>
-        <MapContainer
-          center={[22.5937, 78.9629]}
-          zoom={5}
-          style={{ 
-            height: '480px', 
-            width: '100%',
-            borderRadius: '12px',
-            border: '1px solid #e5e7eb',
-            zIndex: 0
-          }}
-          scrollWheelZoom={true}
-        >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
+        {isLoaded ? (
+          <GoogleMap
+            mapContainerStyle={mapContainerStyle}
+            center={mapCenter}
+            zoom={5}
+            options={mapOptions}
+            onClick={() => setSelectedPhc(null)}
+          >
+            {markers.map((phc, i) => (
+              <MarkerF
+                key={`phc-${phc.name}-${i}`}
+                position={{ lat: phc.lat, lng: phc.lng }}
+                title={`${phc.name} (${phc.medicine}: ${phc.daysLeft} days left)`}
+                icon={getMarkerIcon(phc.status, phc.isLive)}
+                onClick={() => setSelectedPhc(phc)}
+              />
+            ))}
 
-          {markers.map((phc, i) => (
-            <CircleMarker
-              key={i}
-              center={[phc.lat, phc.lng]}
-              radius={STATUS_RADIUS[phc.status]}
-              fillColor={STATUS_COLORS[phc.status]}
-              color={phc.isLive ? '#FFFFFF' : '#FFFFFF'}
-              weight={phc.isLive ? 3 : 2}
-              fillOpacity={0.85}
-            >
-              <Tooltip direction="top" offset={[0, -8]}>
-                <div>
-                  <strong>{phc.name}</strong>
-                  {phc.isLive && (
-                    <span style={{
-                      marginLeft: '4px',
-                      color: '#27AE60',
-                      fontSize: '10px'
-                    }}>● LIVE</span>
-                  )}
-                  <br/>
-                  {phc.medicine}: {phc.daysLeft} days left
-                  <br/>
-                  {phc.state}
-                </div>
-              </Tooltip>
-
-              <Popup>
-                <div style={{ minWidth: '200px' }}>
+            {selectedPhc && (
+              <InfoWindowF
+                position={{ lat: selectedPhc.lat, lng: selectedPhc.lng }}
+                onCloseClick={() => setSelectedPhc(null)}
+              >
+                <div style={{ minWidth: '200px', padding: '4px', color: '#111827' }}>
                   <div style={{ 
                     fontWeight: 'bold', 
                     fontSize: '14px',
                     marginBottom: '4px'
                   }}>
-                    {phc.name}
-                    {phc.isLive && (
+                    {selectedPhc.name}
+                    {selectedPhc.isLive && (
                       <span style={{
                         marginLeft: '6px',
                         background: '#E8F5E9',
                         color: '#2D6A4F',
                         fontSize: '10px',
                         padding: '1px 6px',
-                        borderRadius: '10px'
+                        borderRadius: '10px',
+                        fontWeight: 'bold'
                       }}>● Live</span>
                     )}
                   </div>
@@ -247,49 +263,75 @@ export default function PHCMap() {
                     fontSize: '12px',
                     marginBottom: '8px'
                   }}>
-                    {phc.district}, {phc.state}
+                    {selectedPhc.district}, {selectedPhc.state}
                   </div>
                   <hr style={{ margin: '6px 0', border: 'none',
                     borderTop: '1px solid #eee' }}/>
                   <div style={{ fontSize: '13px' }}>
                     <div style={{ marginBottom: '4px' }}>
-                      Medicine: <strong>{phc.medicine}</strong>
+                      Medicine: <strong>{selectedPhc.medicine}</strong>
                     </div>
-                    {phc.quantity && (
+                    {selectedPhc.quantity && (
                       <div style={{ marginBottom: '4px' }}>
-                        Quantity: <strong>{phc.quantity} units</strong>
+                        Quantity: <strong>{selectedPhc.quantity} units</strong>
                       </div>
                     )}
                     <div style={{ marginBottom: '4px' }}>
                       Days left: <strong style={{
-                        color: STATUS_COLORS[phc.status]
+                        color: STATUS_COLORS[selectedPhc.status]
                       }}>
-                        {phc.daysLeft} days
+                        {selectedPhc.daysLeft} days
                       </strong>
                     </div>
                     <div>
                       Status: <strong style={{
-                        color: STATUS_COLORS[phc.status],
+                        color: STATUS_COLORS[selectedPhc.status],
                         textTransform: 'capitalize'
                       }}>
-                        {phc.status === 'atrisk' ? 'At Risk' : phc.status}
+                        {selectedPhc.status === 'atrisk' ? 'At Risk' : selectedPhc.status}
                       </strong>
                     </div>
-                    {phc.isLive && phc.channel && (
+                    {selectedPhc.isLive && selectedPhc.channel && (
                       <div style={{ 
                         marginTop: '8px',
                         fontSize: '11px',
                         color: '#666'
                       }}>
-                        Via {phc.channel.toUpperCase()} • {phc.reportedBy}
+                        Via {selectedPhc.channel.toUpperCase()} • {selectedPhc.reportedBy}
                       </div>
                     )}
                   </div>
                 </div>
-              </Popup>
-            </CircleMarker>
-          ))}
-        </MapContainer>
+              </InfoWindowF>
+            )}
+          </GoogleMap>
+        ) : loadError ? (
+          <div style={{
+            ...mapContainerStyle,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: '#FEF2F2',
+            color: '#B91C1C',
+            fontSize: '14px',
+            padding: '20px',
+            textAlign: 'center'
+          }}>
+            Error loading Google Maps. Please check your API key.
+          </div>
+        ) : (
+          <div style={{
+            ...mapContainerStyle,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: '#F9FAFB',
+            color: '#6B7280',
+            fontSize: '14px'
+          }}>
+            Loading Google Maps...
+          </div>
+        )}
       </div>
 
       {/* Legend */}

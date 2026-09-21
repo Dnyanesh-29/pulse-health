@@ -22,37 +22,37 @@ const firebaseConfig = {
     process.env.REACT_APP_FIREBASE_API_KEY ||
     process.env.REACT_APP_API_KEY ||
     process.env.REACT_APP_apiKey
-  ) || "AIzaSyCR49yjfGvXazZ5LmB17lV-UkHdDUPh4W8",
+  ) || "AIzaSyBEbJKwWzjUuU0zz6dzCQmtZo4vuPSezaM",
   authDomain: cleanVal(
     process.env.REACT_APP_FIREBASE_AUTH_DOMAIN ||
     process.env.REACT_APP_AUTH_DOMAIN ||
     process.env.REACT_APP_authDomain
-  ) || "stable-hydra-507904-h7.firebaseapp.com",
+  ) || "pulse-health-v2-29a6d.firebaseapp.com",
   projectId: cleanVal(
     process.env.REACT_APP_FIREBASE_PROJECT_ID ||
     process.env.REACT_APP_PROJECT_ID ||
     process.env.REACT_APP_projectId
-  ) || "stable-hydra-507904-h7",
+  ) || "pulse-health-v2-29a6d",
   storageBucket: cleanVal(
     process.env.REACT_APP_FIREBASE_STORAGE_BUCKET ||
     process.env.REACT_APP_STORAGE_BUCKET ||
     process.env.REACT_APP_storageBucket
-  ) || "stable-hydra-507904-h7.firebasestorage.app",
+  ) || "pulse-health-v2-29a6d.firebasestorage.app",
   messagingSenderId: cleanVal(
     process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID ||
     process.env.REACT_APP_MESSAGING_SENDER_ID ||
     process.env.REACT_APP_messagingSenderId
-  ) || "489503624817",
+  ) || "1042401672105",
   appId: cleanVal(
     process.env.REACT_APP_FIREBASE_APP_ID ||
     process.env.REACT_APP_APP_ID ||
     process.env.REACT_APP_appId
-  ) || "1:489503624817:web:f650e815917b92214a15d0",
+  ) || "1:1042401672105:web:3a9f1e75761029e049e2b8",
   measurementId: cleanVal(
     process.env.REACT_APP_FIREBASE_MEASUREMENT_ID ||
     process.env.REACT_APP_MEASUREMENT_ID ||
     process.env.REACT_APP_measurementId
-  ) || "G-5F30J237PF"
+  ) || ""
 };
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
