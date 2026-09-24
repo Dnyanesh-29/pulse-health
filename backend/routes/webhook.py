@@ -82,11 +82,36 @@ REGISTERED_NUMBERS = [
 LOW_STOCK = {"ors": 100, "paracetamol": 100}
 DEFAULT_LOW = 500
 
+FACILITY_REGISTRY = {
+    "nevasa": {"id": "PHC-106", "name": "Nevasa Riverbank PHC", "district": "Ahmednagar", "state": "Maharashtra"},
+    "sangamner": {"id": "PHC-101", "name": "Sangamner Rural PHC", "district": "Ahmednagar", "state": "Maharashtra"},
+    "akole": {"id": "PHC-102", "name": "Akole Tribal PHC", "district": "Ahmednagar", "state": "Maharashtra"},
+    "rahata": {"id": "PHC-103", "name": "Rahata Block PHC", "district": "Nashik", "state": "Maharashtra"},
+    "kopargaon": {"id": "PHC-104", "name": "Kopargaon PHC", "district": "Ahmednagar", "state": "Maharashtra"},
+    "shrirampur": {"id": "PHC-105", "name": "Shrirampur Central PHC", "district": "Ahmednagar", "state": "Maharashtra"},
+    "trimbak": {"id": "PHC-Nashik-047", "name": "Trimbak Rural PHC", "district": "Nashik", "state": "Maharashtra"},
+    "phc047": {"id": "PHC-Nashik-047", "name": "Trimbak Rural PHC", "district": "Nashik", "state": "Maharashtra"},
+    "phc-047": {"id": "PHC-Nashik-047", "name": "Trimbak Rural PHC", "district": "Nashik", "state": "Maharashtra"},
+    "phc106": {"id": "PHC-106", "name": "Nevasa Riverbank PHC", "district": "Ahmednagar", "state": "Maharashtra"},
+    "phc-106": {"id": "PHC-106", "name": "Nevasa Riverbank PHC", "district": "Ahmednagar", "state": "Maharashtra"},
+    "baytu": {"id": "PHC-Barmer-012", "name": "Baytu Border PHC", "district": "Barmer", "state": "Rajasthan"},
+}
+
+SENDER_DEFAULTS = {
+    "917249540141": {"id": "PHC-106", "name": "Nevasa Riverbank PHC", "district": "Ahmednagar", "state": "Maharashtra"},
+}
+
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 def _detect_language(text: str) -> str:
+    # If text is standard ASCII, do not false-trigger foreign language detection
+    if all(ord(c) < 128 for c in text):
+        return "en"
     try:
-        return detect(text)
+        detected = detect(text)
+        if detected in ["hi", "mr", "ta", "te", "bn", "gu", "kn", "pa", "ur"]:
+            return detected
+        return "en"
     except LangDetectException:
         return "en"
 
@@ -123,7 +148,7 @@ def _parse_with_gemini(message: str, sender: str) -> dict:
         med_match = re.search(r"(paracetamol|ors|antibiotics|ifa|zinc|calcium)", message, re.IGNORECASE)
         qty_match = re.search(r"\b(\d+)\b", message)
         return {
-            "phc_id": sender,
+            "phc_id": None,
             "medicine": med_match.group(1).lower() if med_match else "other",
             "quantity": int(qty_match.group(1)) if qty_match else 0,
             "unit": "units",
@@ -170,9 +195,31 @@ def _process_message(body: str, sender: str, channel: str, verified: bool = Fals
     # Gemini parse
     parsed = _parse_with_gemini(english_body, sender)
 
-    # Fallback phc_id
-    if not parsed.get("phc_id"):
-        parsed["phc_id"] = sender
+    # Robust PHC identification: match text or sender against facility registry
+    raw_phc = (str(parsed.get("phc_id") or "")).lower().strip()
+    clean_sender = re.sub(r"\D", "", sender)
+    found_facility = None
+
+    for key, fac in FACILITY_REGISTRY.items():
+        if key in raw_phc or key in body.lower() or key in english_body.lower():
+            found_facility = fac
+            break
+
+    if not found_facility and clean_sender in SENDER_DEFAULTS:
+        found_facility = SENDER_DEFAULTS[clean_sender]
+
+    if found_facility:
+        parsed["phc_id"] = found_facility["id"]
+        parsed["phc_name"] = found_facility["name"]
+        parsed["district"] = found_facility["district"]
+        parsed["state"] = found_facility["state"]
+    else:
+        # Fallback to clean name if phc_id is missing or looks like a phone number
+        if not parsed.get("phc_id") or "whatsapp:" in str(parsed.get("phc_id")) or str(parsed.get("phc_id")).startswith("+"):
+            parsed["phc_id"] = "PHC-106"
+            parsed["phc_name"] = "Nevasa Riverbank PHC"
+        else:
+            parsed["phc_name"] = parsed["phc_id"]
 
     # Firestore: collection routing
     doc = {

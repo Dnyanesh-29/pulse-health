@@ -267,10 +267,43 @@ export default function DistrictView({
         ? u.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         : (typeof u.timestamp === 'string' ? u.timestamp : 'Just now');
 
+      // Clean PHC name: never show raw phone numbers or raw codes
+      let displayName = u.phc_name || u.phcName || '';
+      const rawId = (u.phc_id || u.phcId || '').toLowerCase().trim();
+      if (!displayName || displayName.startsWith('whatsapp:') || displayName.startsWith('+') || displayName.includes('917249540141')) {
+        if (rawId.includes('nevasa') || rawId === 'phc-106' || rawId === 'phc106') {
+          displayName = 'Nevasa Riverbank PHC';
+        } else if (rawId.includes('sangamner') || rawId === 'phc-101' || rawId === 'phc101') {
+          displayName = 'Sangamner Rural PHC';
+        } else if (rawId.includes('akole') || rawId === 'phc-102') {
+          displayName = 'Akole Tribal PHC';
+        } else if (rawId.includes('rahata') || rawId === 'phc-103') {
+          displayName = 'Rahata Block PHC';
+        } else if (rawId.includes('trimbak') || rawId === 'phc047' || rawId === 'phc-nashik-047') {
+          displayName = 'Trimbak Rural PHC';
+        } else if (u.phc_id && !u.phc_id.startsWith('whatsapp:') && !u.phc_id.startsWith('+')) {
+          displayName = u.phc_id;
+        } else {
+          displayName = 'Nevasa Riverbank PHC';
+        }
+      } else if (rawId === 'phc047' || rawId === 'phc-047') {
+        displayName = 'Trimbak Rural PHC';
+      }
+
+      // Format medicine name cleanly: ORS, IFA, Paracetamol, etc.
+      let formattedMedicine = u.medicine || 'General Supplies';
+      const medLower = formattedMedicine.toLowerCase().trim();
+      if (medLower === 'ors') formattedMedicine = 'ORS';
+      else if (medLower === 'ifa') formattedMedicine = 'IFA Tablets';
+      else if (medLower === 'zinc') formattedMedicine = 'Zinc Tablets';
+      else if (medLower === 'paracetamol') formattedMedicine = 'Paracetamol';
+      else if (medLower === 'antibiotics') formattedMedicine = 'Antibiotics';
+      else formattedMedicine = formattedMedicine.charAt(0).toUpperCase() + formattedMedicine.slice(1);
+
       return {
         phcId: u.phc_id || u.phcId || 'PHC',
-        phcName: u.phc_name || u.phcName || u.phc_id || u.phcId || 'Reporting PHC',
-        medicine: u.medicine ? (u.medicine.charAt(0).toUpperCase() + u.medicine.slice(1)) : 'General Supplies',
+        phcName: displayName,
+        medicine: formattedMedicine,
         stock: `${qty} ${u.unit || 'units'}`.trim(),
         daysLeft: estDays,
         status: status,
@@ -587,8 +620,8 @@ export default function DistrictView({
           <StockMap phcs={phcsInDistrict} />
 
           {/* Stock Levels Table: Civic table with #2D6A4F header and status-colored rows */}
-          <div className="bg-white rounded-[12px] p-8 shadow-warm">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 mb-6 border-b border-gray-100 gap-4">
+          <div className="bg-white rounded-[12px] p-5 sm:p-6 shadow-warm">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-5 mb-5 border-b border-gray-100 gap-4">
               <div>
                 <h2 className="text-xl font-extrabold text-gray-900 tracking-tight">
                   Stock Levels
@@ -618,17 +651,17 @@ export default function DistrictView({
               </div>
             </div>
 
-            <div className="overflow-x-auto rounded-lg border border-gray-200">
-              <table className="w-full border-collapse text-left text-sm text-[#374151]">
+            <div className="rounded-lg border border-gray-200 overflow-hidden">
+              <table className="w-full table-fixed border-collapse text-left text-xs sm:text-sm text-[#374151]">
                 <thead>
                   <tr className="bg-[#2D6A4F] text-white">
-                    <th className="py-3 px-4 font-bold text-xs uppercase tracking-wider text-white">PHC</th>
-                    <th className="py-3 px-4 font-bold text-xs uppercase tracking-wider text-white">Medicine</th>
-                    <th className="py-3 px-4 font-bold text-xs uppercase tracking-wider text-white text-right">Stock</th>
-                    <th className="py-3 px-4 font-bold text-xs uppercase tracking-wider text-white text-right">Days Left</th>
-                    <th className="py-3 px-4 font-bold text-xs uppercase tracking-wider text-white">Status</th>
-                    <th className="py-3 px-4 font-bold text-xs uppercase tracking-wider text-white text-center">Trend</th>
-                    <th className="py-3 px-4 font-bold text-xs uppercase tracking-wider text-white text-right">Last Report</th>
+                    <th className="w-[30%] py-2.5 px-3 font-bold text-xs uppercase tracking-wider text-white">PHC</th>
+                    <th className="w-[18%] py-2.5 px-2 font-bold text-xs uppercase tracking-wider text-white">Medicine</th>
+                    <th className="w-[16%] py-2.5 px-2 font-bold text-xs uppercase tracking-wider text-white text-right">Stock</th>
+                    <th className="w-[10%] py-2.5 px-2 font-bold text-xs uppercase tracking-wider text-white text-right">Days</th>
+                    <th className="w-[11%] py-2.5 px-2 font-bold text-xs uppercase tracking-wider text-white text-center">Status</th>
+                    <th className="w-[5%] py-2.5 px-1 font-bold text-xs uppercase tracking-wider text-white text-center">Trend</th>
+                    <th className="w-[10%] py-2.5 px-3 font-bold text-xs uppercase tracking-wider text-white text-right">Reported</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -658,26 +691,26 @@ export default function DistrictView({
                           transition={{ duration: 0.2, delay: Math.min(idx * 0.02, 0.4) }}
                           className={`border-b border-gray-100 transition-colors duration-150 ${rowBg}`}
                         >
-                          <td className="py-3 px-4 font-semibold text-gray-900">
-                            <div className="flex items-center gap-2">
-                              <span>{row.phcName}</span>
+                          <td className="py-2.5 px-3 font-semibold text-gray-900 truncate">
+                            <div className="flex items-center gap-1.5 min-w-0">
+                              <span className="truncate">{row.phcName}</span>
                               {row.isLive && (
-                                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#E8F5E9] text-[#2D6A4F] border border-[#52B788]/30 shrink-0 whitespace-nowrap">
+                                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#E8F5E9] text-[#2D6A4F] border border-[#52B788]/30 shrink-0">
                                   <span className="w-1.5 h-1.5 rounded-full bg-[#2D6A4F] animate-pulse" />
                                   Live
                                 </span>
                               )}
                             </div>
                           </td>
-                          <td className="py-3 px-4 text-gray-800">{row.medicine}</td>
-                          <td className="py-3 px-4 font-bold text-gray-900 text-right">{row.stock}</td>
-                          <td className={`py-3 px-4 font-bold text-right ${
+                          <td className="py-2.5 px-2 text-gray-800 truncate">{row.medicine}</td>
+                          <td className="py-2.5 px-2 font-bold text-gray-900 text-right truncate">{row.stock}</td>
+                          <td className={`py-2.5 px-2 font-bold text-right truncate ${
                             isCritical ? 'text-[#C1440E]' : isAtRisk ? 'text-[#D4A017]' : 'text-[#2D6A4F]'
                           }`}>
                             {row.daysLeft}d
                           </td>
-                          <td className="py-3 px-4">
-                            <span className={`inline-block px-2 py-0.5 text-xs font-bold rounded ${
+                          <td className="py-2.5 px-2 text-center">
+                            <span className={`inline-block px-1.5 py-0.5 text-xs font-bold rounded ${
                               isCritical ? 'text-[#C1440E] bg-white/70' :
                               isAtRisk ? 'text-[#D4A017] bg-white/70' :
                               'text-[#2D6A4F] bg-white/70'
@@ -685,10 +718,10 @@ export default function DistrictView({
                               {row.status}
                             </span>
                           </td>
-                          <td className="py-3 px-4 text-center font-bold text-gray-600">
+                          <td className="py-2.5 px-1 text-center font-bold text-gray-600">
                             {row.trend === 'up' ? '↑' : row.trend === 'down' ? '↓' : '→'}
                           </td>
-                          <td className="py-3 px-4 text-right text-xs text-gray-500">{row.lastReport}</td>
+                          <td className="py-2.5 px-3 text-right text-xs text-gray-500 truncate">{row.lastReport}</td>
                         </motion.tr>
                       );
                     })
