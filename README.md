@@ -22,7 +22,7 @@
 ---
 
 **Track 03 — Smart Health & Supply Chain Resilience**  
-Build with AI: Code for Communities — Second Edition  
+Build with AI: Code for Communities - Second Edition  
 Google Cloud × Hack2skill
 
 </div>
@@ -33,7 +33,7 @@ Google Cloud × Hack2skill
 
 India has **31,882 Primary Health Centres** serving 1.4 billion people.
 
-Every year, stock-outs of essential medicines — ORS, paracetamol, antibiotics — cost lives that should have been saved. The root cause isn't a shortage of medicine. It's a **gap in information**.
+Every year, stock-outs of essential medicines  ORS, paracetamol, antibiotics  cost lives that should have been saved. The root cause isn't a shortage of medicine. It's a **gap in information**.
 
 | Reality | Data |
 |---|---|
@@ -50,7 +50,7 @@ The existing system is reactive. PULSE is preemptive.
 
 ## 💡 Our Solution
 
-PULSE is a **federated AI command centre** that gives district health officers real-time visibility into every PHC's stock levels, outbreak risk signals, and redistribution opportunities — and tells them **where to move medicines before anyone runs out**.
+PULSE is a **federated AI command centre** that gives district health officers real-time visibility into every PHC's stock levels, outbreak risk signals, and redistribution opportunities and tells them **where to move medicines before anyone runs out**.
 
 Two novel insights power PULSE:
 
@@ -114,7 +114,7 @@ Twilio Webhook  ──►  Flask Cloud Run  ──►  Gemini 2.5 Flash
 ## ✨ Key Features
 
 ### 📱 Zero-App Reporting
-PHC workers send stock updates over **WhatsApp or SMS** — no app install, no training required, works on basic ₹500 feature phones across rural India. Gemini 2.5 Flash parses free-text messages in any Indian language and extracts structured medicine, quantity, and unit data.
+PHC workers send stock updates over **WhatsApp or SMS** no app install, no training required, works on basic ₹500 feature phones across rural India. Gemini 2.5 Flash parses free-text messages in any Indian language and extracts structured medicine, quantity, and unit data.
 
 **Parsed inputs include:**
 - `"PHC047 paracetamol 200 units"`
@@ -122,7 +122,7 @@ PHC workers send stock updates over **WhatsApp or SMS** — no app install, no t
 - `"ors khatam ho gaya PHC014"` *(Hindi: "ORS has run out")*
 
 ### 🦟 Outbreak-Triggered Preemptive Restocking
-Connected to **IDSP disease surveillance signals**. When dengue cases spike in a district, PULSE pre-positions ORS before PHCs feel the pressure. Features include: dengue RDT positivity, diarrhoeal case counts, malaria (vivax + falciparum), encephalitis, chikungunya, and cholera signals — all used as ML features.
+Connected to **IDSP disease surveillance signals**. When dengue cases spike in a district, PULSE pre-positions ORS before PHCs feel the pressure. Features include: dengue RDT positivity, diarrhoeal case counts, malaria (vivax + falciparum), encephalitis, chikungunya, and cholera signals all used as ML features.
 
 ### 📈 ML Demand Forecasting
 
@@ -135,7 +135,7 @@ Connected to **IDSP disease surveillance signals**. When dengue cases spike in a
 Trained on **2 years of HMIS district-level consumption data** across 88 districts in Maharashtra and Rajasthan. Input features include OPD attendance, seasonal month signals, epidemic case counts, temperature, and precipitation.
 
 ### 🤖 AI Redistribution Recommendations
-**Gemini 1.5 Flash** analyzes surplus and deficit PHC snapshots from Firestore and generates natural-language transfer orders complete with recommended quantities, medicine type, and estimated distances — enabling DHOs to act in minutes, not days.
+**Gemini 1.5 Flash** analyzes surplus and deficit PHC snapshots from Firestore and generates natural-language transfer orders complete with recommended quantities, medicine type, and estimated distances enabling DHOs to act in minutes, not days.
 
 ### 🗺️ Real-Time District Command Centre
 The React dashboard provides district health officers with:
@@ -371,7 +371,7 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 <div align="center">
 
-**PULSE — Know before it flatlines.**
+**PULSE - Know before it flatlines.**
 
 *Connecting 31,882 PHCs to the intelligence they need, before the medicine runs out.*
 
