@@ -42,9 +42,11 @@ reseed_demo_data.py
 add_ahmednagar_alerts.py
 backend/seed_demo_alerts.py
 
-# -- ML models (large binary files) -------------------------------------------
+# -- ML models & training -----------------------------------------------------
 ml/*.pkl
 ml/*.joblib
+ml/train_local_model.py
+ml/train*.py
 
 # -- Data files (too large for git) -------------------------------------------
 data/raw/

@@ -154,6 +154,7 @@ The React dashboard provides district health officers with:
 | Input channel | Twilio WhatsApp + SMS API | Zero-app field reporting |
 | AI parsing | Gemini 2.5 Flash | Multilingual NLP extraction |
 | AI recommendations | Gemini 1.5 Flash | Redistribution orders |
+| Model Training | Google Cloud Vertex AI | Managed ML model training & pipelines |
 | Forecasting | GradientBoosting (scikit-learn) | Demand prediction |
 | Real-time DB | Firebase Firestore | Live stock ledger |
 | Backend | Flask + Cloud Run | Webhook + API layer |
@@ -206,8 +207,7 @@ PULSE/
 │           ├── AlertCard.js    # Individual alert with resolve action
 │           └── AnimatedCounter.js # Animated stat number counters
 │
-├── ml/                         # ML training & model artifacts
-│   ├── train_local_model.py    # GradientBoosting training on HMIS data
+├── ml/                         # ML models & artifacts (Vertex AI trained)
 │   ├── ors_model.pkl           # Trained ORS demand model (R²=0.905)
 │   ├── antibiotics_model.pkl   # Trained antibiotics demand model (R²=0.609)
 │   ├── ifa_model.pkl           # Trained IFA tablets demand model
@@ -266,16 +266,9 @@ npm start
 # React dev server at http://localhost:3000
 ```
 
-### 3. ML Model Training
+### 3. ML Model Training (Vertex AI)
 
-```bash
-# From PULSE/ root
-# Ensure data/processed/pulse_master_final.csv exists (run data/scripts/ first)
-
-pip install scikit-learn pandas numpy
-python ml/train_local_model.py
-# Outputs: ml/ors_model.pkl, antibiotics_model.pkl, district_encoder.pkl
-```
+Forecasting models are trained and versioned on **Google Cloud Vertex AI** using custom training pipelines over HMIS consumption datasets and EpiClim outbreak signals. Trained serialized models (`ors_model.pkl`, `antibiotics_model.pkl`, `ifa_model.pkl`) and encoders are exported directly to `ml/` for low-latency inference.
 
 ### 4. Data Pipeline (optional)
 
