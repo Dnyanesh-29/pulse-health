@@ -4,6 +4,8 @@
 .env.production
 backend/.env
 dashboard/.env
+app.yaml
+backend/app.yaml
 
 # -- Firebase credentials ------------------------------------------------------
 backend/firebase-key.json

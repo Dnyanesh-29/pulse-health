@@ -22,7 +22,7 @@ const firebaseConfig = {
     process.env.REACT_APP_FIREBASE_API_KEY ||
     process.env.REACT_APP_API_KEY ||
     process.env.REACT_APP_apiKey
-  ) || "AIzaSyBEbJKwWzjUuU0zz6dzCQmtZo4vuPSezaM",
+  ) || "",
   authDomain: cleanVal(
     process.env.REACT_APP_FIREBASE_AUTH_DOMAIN ||
     process.env.REACT_APP_AUTH_DOMAIN ||
