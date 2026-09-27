@@ -13,7 +13,7 @@
 
 *"Know before it flatlines."*
 
-[![Firebase Hosting](https://img.shields.io/badge/Live%20Demo-Firebase-orange?style=for-the-badge&logo=firebase)](https://stable-hydra-507904-h7.web.app)
+[![Firebase Hosting](https://img.shields.io/badge/Live%20Demo-Firebase-orange?style=for-the-badge&logo=firebase)](https://pulse-health-v2-29a6d.web.app)
 [![Python](https://img.shields.io/badge/Python-3.11+-blue?style=for-the-badge&logo=python)](https://python.org)
 [![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react)](https://reactjs.org)
 [![Gemini](https://img.shields.io/badge/Gemini-2.5%20Flash-4285F4?style=for-the-badge&logo=google)](https://ai.google.dev)
@@ -66,7 +66,7 @@ Two novel insights power PULSE:
 
 | | |
 |---|---|
-| **Dashboard URL** | https://stable-hydra-507904-h7.web.app |
+| **Dashboard URL** | https://pulse-health-v2-29a6d.web.app |
 | **Pilot coverage** | 84 districts · Maharashtra + Rajasthan |
 | **Data mode** | Firestore real-time + HMIS historical |
 
@@ -174,55 +174,6 @@ The React dashboard provides district health officers with:
 | Medicine consumption | HMIS (hmis.nhp.gov.in) | Forecast model training data |
 | Disease outbreaks | EpiClim / IDSP | Outbreak signal features for ML |
 | Population data | Census 2011 | Demand normalisation |
-
----
-
-## 📁 Project Structure
-
-```
-PULSE/
-├── backend/                    # Flask REST API
-│   ├── app.py                  # App factory, blueprint registration
-│   ├── routes/
-│   │   ├── webhook.py          # Twilio WhatsApp/SMS handler + Gemini parsing
-│   │   ├── predict.py          # ML forecast endpoint (/api/predict)
-│   │   ├── alerts.py           # Alert creation & resolution
-│   │   ├── forecast.py         # District-level forecast API
-│   │   └── recommend.py        # Gemini redistribution recommendations
-│   └── requirements.txt
-│
-├── dashboard/                  # React frontend
-│   └── src/
-│       ├── App.js              # Router, nav, global Firestore subscription
-│       ├── firebase.js         # Firestore client + mock seed data
-│       ├── pages/
-│       │   ├── DistrictView.js # Main command centre (stock table, alerts, map)
-│       │   ├── StateView.js    # State-level district risk overview
-│       │   └── AlertsFeed.js   # Full alert management feed
-│       └── components/
-│           ├── PHCMap.js       # Leaflet map with live PHC markers
-│           ├── ForecastChart.js # Recharts demand forecast visualization
-│           ├── StockMap.js     # PHC facility grid cards
-│           ├── RecommendPanel.js # Gemini transfer order display
-│           ├── AlertCard.js    # Individual alert with resolve action
-│           └── AnimatedCounter.js # Animated stat number counters
-│
-├── ml/                         # ML models & artifacts (Vertex AI trained)
-│   ├── ors_model.pkl           # Trained ORS demand model (R²=0.905)
-│   ├── antibiotics_model.pkl   # Trained antibiotics demand model (R²=0.609)
-│   ├── ifa_model.pkl           # Trained IFA tablets demand model
-│   ├── district_encoder.pkl    # LabelEncoder for 88 districts
-│   ├── features.json           # Feature list (18 features)
-│   └── model_metrics.json      # Evaluation metrics per target
-│
-└── data/
-    ├── raw/                    # Source HMIS CSVs (gitignored)
-    ├── processed/              # Merged master dataset (gitignored)
-    └── scripts/
-        ├── extract_hmis.py          # Downloads & extracts HMIS district data
-        ├── prepare_pulse_dataset.py # Merges HMIS + EpiClim features
-        └── generate_districts_summary.py  # Builds districts_summary.json
-```
 
 ---
 
